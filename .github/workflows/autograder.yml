@@ -1,0 +1,11 @@
+name: Autograder
+on: [push]
+jobs:
+  grade:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Install SWI-Prolog
+      run: sudo apt-get update && sudo apt-get install -y swi-prolog
+    - name: Run tests
+      run: swipl -g "consult('tests/test_expert.pl'), run_tests" -t halt
