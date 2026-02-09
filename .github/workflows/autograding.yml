@@ -8,4 +8,4 @@ jobs:
     - name: Install SWI-Prolog
       run: sudo apt-get update && sudo apt-get install -y swi-prolog
     - name: Run tests
-      run: swipl -g "consult('tests/test_expert.pl'), run_tests" -t halt
+      run: swipl -g "consult('tests/visible/test_expert.pl'), run_tests" -t halt
