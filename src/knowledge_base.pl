@@ -1,16 +1,53 @@
-% Project 4: Expert System - Knowledge Base
-% YOUR DOMAIN: Check variant.json
+% Knowledge Base — CSC3301 Project 4: Expert System
+% ================================================
+%
+% This file contains the facts for your expert system.
+% Your domain will be specified in your ASSIGNMENT.md after
+% variant generation.
+%
+% Requirements:
+%   - Minimum 30 facts
+%   - Well-organized and documented
+%   - Use meaningful predicate and constant names
+%
+% TODO: Replace these placeholder facts with your domain-specific facts.
+% See your ASSIGNMENT.md for your assigned domain and requirements.
 
-% Example for Medical domain - adapt to YOUR assigned domain
+% --- Placeholder facts (replace with your domain) ---
+% Example fact format:
+%   predicate(arg1, arg2).
+%   property(entity, value).
+%   relationship(entity1, entity2).
 
-% Facts: symptom(Disease, Symptom)
-symptom(flu, fever).
-symptom(flu, cough).
-symptom(flu, fatigue).
-symptom(cold, runny_nose).
-symptom(cold, sneezing).
-% ADD MORE FACTS (minimum 30)
+% ============================================================
+% FACT AND RULE INTERFACE PREDICATES
+% ============================================================
 
-% Facts: patient symptoms - for testing
-patient_symptom(patient1, fever).
-patient_symptom(patient1, cough).
+% fact(F)
+%
+% PURPOSE: Query predicate to retrieve all facts from the knowledge base
+% INPUT: F - variable or specific fact term
+% OUTPUT: unifies with each fact in the knowledge base
+%
+% IMPLEMENTATION NOTES:
+%   - This is a meta-predicate for querying the knowledge base
+%   - Can be used by the inference engine to enumerate facts
+%   - Should succeed for all ground facts in this file
+%
+% TODO: Define facts in the knowledge base below.
+%       Each fact should be of the form: fact_name(arg1, arg2, ...).
+%
+% EXAMPLE:
+%   fact(human(socrates)).
+%   fact(human(plato)).
+%   fact(mortal_species(human)).
+
+% fact/1 - Returns all facts (defined by consulting knowledge base)
+fact(F) :- clause(F, true), \+ system_predicate(F).
+
+% Helper: check if predicate is a system predicate
+system_predicate(F) :- functor(F, Name, _), atom_codes(Name, [C|_]), C == 0'$.
+
+% ============================================================
+% ADD YOUR DOMAIN FACTS BELOW
+% ============================================================

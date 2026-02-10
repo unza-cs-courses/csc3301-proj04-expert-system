@@ -7,6 +7,85 @@
 
 Build an expert system in Prolog for a domain assigned based on your student ID. Your system will encode domain knowledge as facts and rules, answer queries through logical inference, and explain its reasoning.
 
+## Environment Setup
+
+### Installing SWI-Prolog
+
+#### macOS
+```bash
+brew install swi-prolog
+```
+
+#### Ubuntu/Debian
+```bash
+sudo apt install swi-prolog
+```
+
+#### Windows
+Download the installer from [swi-prolog.org](https://www.swi-prolog.org/download/stable) and follow the installation wizard.
+
+### Verify Installation
+
+```bash
+swipl --version
+```
+
+You should see output like: `SWI-Prolog version 9.x.x`
+
+### Running Tests
+
+Run all visible tests:
+```bash
+swipl -g "consult('tests/visible/test_expert.pl'), run_tests" -t halt
+```
+
+### Interactive Development
+
+Start the SWI-Prolog interactive shell:
+```bash
+swipl
+```
+
+Then load your modules:
+```prolog
+?- consult('src/knowledge_base.pl').
+?- consult('src/rules.pl').
+?- consult('src/consultation.pl').
+```
+
+### Debugging Tips
+
+#### Enable Tracing
+Step through your predicates to understand execution flow:
+```prolog
+?- trace.
+?- your_query(X, Y).
+?- notrace.
+```
+
+The tracer shows:
+- `Call:` when a predicate is invoked
+- `Exit:` when it succeeds
+- `Redo:` when backtracking occurs
+- `Fail:` when it fails
+
+#### List Predicate Definitions
+View all clauses of a predicate:
+```prolog
+?- listing(diagnose/2).
+?- listing(symptom/2).
+```
+
+#### Common Prolog Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| `Undefined procedure` | Predicate not defined or wrong arity | Check predicate name and number of arguments |
+| `Instantiation error` | Variable should be instantiated | Ensure variables are bound before use |
+| `Syntax error` | Typo or missing punctuation | Check parentheses, periods, and commas |
+| `False` | Query fails | Use `trace` to debug the execution path |
+| `Infinite loop` | Infinite recursion without base case | Add a base case or cut (`!`) to prevent backtracking |
+
 ## Variant System
 
 This assignment uses an automated variant system to give each student a unique domain. When you accept the assignment through GitHub Classroom:
