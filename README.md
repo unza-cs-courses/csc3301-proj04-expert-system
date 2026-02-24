@@ -129,7 +129,6 @@ Your personalized requirements are in `ASSIGNMENT.md`. General requirements incl
 .
 ├── .github/
 │   └── workflows/
-│       ├── autograding.yml      # Runs tests on push
 │       └── generate-variant.yml  # Generates student variant
 ├── .variant_config.json          # Your variant configuration (auto-generated)
 ├── ASSIGNMENT.md                 # Your personalized assignment (auto-generated)
@@ -158,6 +157,8 @@ Your personalized requirements are in `ASSIGNMENT.md`. General requirements incl
 | Final | Complete with tests | 15% |
 
 ## Running Tests
+
+> **Important:** Testing is local-only. There is no automatic test feedback when you push to GitHub. You must run all tests yourself before pushing your code.
 
 ```bash
 # Run visible tests
@@ -194,13 +195,14 @@ Explanation = ['Symptoms: fever, cough, fatigue', 'Matched flu criteria'].
 
 ## Getting Started
 
-1. **Wait for variant generation** - After accepting the assignment, wait for the GitHub Action to complete
+1. **Check your variant** - After accepting the assignment, a GitHub Action generates your personalized variant. Once complete, check `ASSIGNMENT.md` for your assigned domain and requirements
 2. **Read ASSIGNMENT.md** - Your personalized requirements and examples
 3. **Start with facts** - Build your knowledge base in `src/knowledge_base.pl`
 4. **Add rules** - Implement inference rules in `src/rules.pl`
-5. **Test incrementally** - Run tests after each addition
+5. **Test incrementally** - Run tests locally after each addition
 6. **Add explanation** - Implement `explain/2` predicate
 7. **Create consultation** - Build interactive mode in `src/consultation.pl`
+8. **Push your code** - Once all tests pass locally, push your code before the deadline
 
 ## Debugging Tips
 
