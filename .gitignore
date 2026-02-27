@@ -2,3 +2,7 @@
 *.plt
 __pycache__/
 .pytest_cache/
+
+# Generated per-student artifacts (created by workflow / scripts)
+.variant_config.json
+ASSIGNMENT.md
