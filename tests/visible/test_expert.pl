@@ -44,38 +44,57 @@ test(minimum_rule_count, [nondet]) :-
 :- begin_tests(explain_predicate).
 
 test(explain_exists, [nondet]) :-
-    % Verify explain/2 predicate is defined
-    current_predicate(explain/2).
+    % Verify explain/2 predicate is defined and can produce a result
+    current_predicate(explain/2),
+    explain(_, Explanation),
+    is_list(Explanation).
 
 test(explain_returns_list, [nondet]) :-
     % Verify explain/2 returns a list for some query
     % This test is flexible - student just needs to have explain/2 working
-    catch(
-        (explain(_, Explanation), is_list(Explanation)),
-        _,
-        fail
-    ).
+    current_predicate(explain/2),
+    explain(_, Explanation),
+    is_list(Explanation),
+    length(Explanation, Len),
+    Len > 0.
 
 :- end_tests(explain_predicate).
 
 :- begin_tests(consultation).
 
 test(consultation_mode_exists, [nondet]) :-
-    % Verify interactive consultation predicate exists
+    % Verify interactive consultation predicate exists and process_input/1
+    % has been implemented beyond the template stub (template stub body is
+    % just writeln('Processing...'), so it should have multiple clauses or
+    % a body that references the knowledge base / inference engine).
     (current_predicate(consult_user/0) ;
      current_predicate(start_consultation/0) ;
-     current_predicate(interactive/0)).
+     current_predicate(interactive/0)),
+    current_predicate(process_input/1),
+    predicate_property(process_input/1, number_of_clauses(N)),
+    N > 1.
 
 :- end_tests(consultation).
 
 :- begin_tests(recursion).
 
 test(has_recursive_predicate, [nondet]) :-
-    % Check that at least one recursive predicate exists
-    % A predicate is recursive if it calls itself
+    % Check that at least one student-defined recursive predicate exists
+    % (excludes template-provided predicates like consultation_loop)
     clause(Head, Body),
     functor(Head, Name, Arity),
+    \+ template_predicate(Name),
     contains_call(Body, Name, Arity).
+
+% Template-provided predicates that are already recursive
+template_predicate(consultation_loop).
+template_predicate(start_consultation).
+template_predicate(process_input).
+template_predicate(contains_call).
+template_predicate(is_rule_head).
+template_predicate(system_predicate).
+template_predicate(fact).
+template_predicate(rule).
 
 :- end_tests(recursion).
 
