@@ -14,14 +14,23 @@
 :- begin_tests(knowledge_base).
 
 test(has_facts, [nondet]) :-
-    % Verify that at least some facts exist
-    findall(F, clause(F, true), Facts),
+    % Verify that at least some student-defined facts exist
+    findall(F, (
+        clause(F, true),
+        \+ infrastructure_predicate(F),
+        \+ system_predicate(F)
+    ), Facts),
     length(Facts, Count),
     Count > 0.
 
 test(minimum_fact_count, [nondet]) :-
     % Check minimum facts requirement (at least 20 base facts)
-    aggregate_all(count, (clause(_, true), \+ is_rule_head(_)), FactCount),
+    % Counts unit clauses (facts) excluding infrastructure predicates
+    aggregate_all(count, (
+        clause(F, true),
+        \+ infrastructure_predicate(F),
+        \+ system_predicate(F)
+    ), FactCount),
     FactCount >= 20.
 
 :- end_tests(knowledge_base).
@@ -29,14 +38,28 @@ test(minimum_fact_count, [nondet]) :-
 :- begin_tests(rules).
 
 test(has_rules, [nondet]) :-
-    % Verify that rules exist (clauses with bodies)
-    findall(H, (clause(H, B), B \== true), Rules),
+    % Verify that student-defined rules exist (clauses with non-trivial bodies)
+    % Excludes template infrastructure and stub predicates (body = fail)
+    findall(H, (
+        clause(H, B),
+        B \== true,
+        B \== fail,
+        \+ system_predicate(H),
+        \+ infrastructure_predicate(H)
+    ), Rules),
     length(Rules, Count),
     Count > 0.
 
 test(minimum_rule_count, [nondet]) :-
     % Check minimum rules requirement (at least 10 rules)
-    aggregate_all(count, (clause(H, B), B \== true, \+ system_predicate(H)), RuleCount),
+    % Excludes template infrastructure and stub predicates (body = fail)
+    aggregate_all(count, (
+        clause(H, B),
+        B \== true,
+        B \== fail,
+        \+ system_predicate(H),
+        \+ infrastructure_predicate(H)
+    ), RuleCount),
     RuleCount >= 10.
 
 :- end_tests(rules).
@@ -99,6 +122,29 @@ template_predicate(rule).
 :- end_tests(recursion).
 
 % Helper predicates for testing
+
+% Template infrastructure predicates — these are provided in the template
+% and should not count as student-defined rules or facts
+infrastructure_predicate(H) :- functor(H, fact, 1).
+infrastructure_predicate(H) :- functor(H, rule, 2).
+infrastructure_predicate(H) :- functor(H, system_predicate, 1).
+infrastructure_predicate(H) :- functor(H, can_derive, 1).
+infrastructure_predicate(H) :- functor(H, forward_chain, 1).
+infrastructure_predicate(H) :- functor(H, backward_chain, 2).
+infrastructure_predicate(H) :- functor(H, explain, 2).
+infrastructure_predicate(H) :- functor(H, test_hypothesis, 1).
+infrastructure_predicate(H) :- functor(H, modus_ponens, 3).
+infrastructure_predicate(H) :- functor(H, transitive, 3).
+infrastructure_predicate(H) :- functor(H, certainty, 2).
+infrastructure_predicate(H) :- functor(H, bayesian_update, 3).
+infrastructure_predicate(H) :- functor(H, start_consultation, 0).
+infrastructure_predicate(H) :- functor(H, consultation_loop, 0).
+infrastructure_predicate(H) :- functor(H, process_input, 1).
+% Test-file helper predicates (loaded into same environment)
+infrastructure_predicate(H) :- functor(H, infrastructure_predicate, 1).
+infrastructure_predicate(H) :- functor(H, contains_call, 3).
+infrastructure_predicate(H) :- functor(H, is_rule_head, 1).
+infrastructure_predicate(H) :- functor(H, template_predicate, 1).
 
 % Check if a term contains a call to a specific predicate
 contains_call(Term, Name, Arity) :-
