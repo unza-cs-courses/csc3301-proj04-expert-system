@@ -15,10 +15,14 @@
 
 test(has_facts, [nondet]) :-
     % Verify that at least some student-defined facts exist
+    % Uses current_predicate/1 to safely enumerate predicates before
+    % calling clause/2, which requires a sufficiently instantiated head.
     findall(F, (
-        clause(F, true),
+        current_predicate(Name/Arity),
+        functor(F, Name, Arity),
         \+ infrastructure_predicate(F),
-        \+ system_predicate(F)
+        \+ system_predicate(F),
+        catch(clause(F, true), _, fail)
     ), Facts),
     length(Facts, Count),
     Count > 0.
@@ -27,9 +31,11 @@ test(minimum_fact_count, [nondet]) :-
     % Check minimum facts requirement (at least 20 base facts)
     % Counts unit clauses (facts) excluding infrastructure predicates
     aggregate_all(count, (
-        clause(F, true),
+        current_predicate(Name/Arity),
+        functor(F, Name, Arity),
         \+ infrastructure_predicate(F),
-        \+ system_predicate(F)
+        \+ system_predicate(F),
+        catch(clause(F, true), _, fail)
     ), FactCount),
     FactCount >= 20.
 
@@ -41,11 +47,13 @@ test(has_rules, [nondet]) :-
     % Verify that student-defined rules exist (clauses with non-trivial bodies)
     % Excludes template infrastructure and stub predicates (body = fail)
     findall(H, (
-        clause(H, B),
-        B \== true,
-        B \== fail,
+        current_predicate(Name/Arity),
+        functor(H, Name, Arity),
         \+ system_predicate(H),
-        \+ infrastructure_predicate(H)
+        \+ infrastructure_predicate(H),
+        catch(clause(H, B), _, fail),
+        B \== true,
+        B \== fail
     ), Rules),
     length(Rules, Count),
     Count > 0.
@@ -54,11 +62,13 @@ test(minimum_rule_count, [nondet]) :-
     % Check minimum rules requirement (at least 10 rules)
     % Excludes template infrastructure and stub predicates (body = fail)
     aggregate_all(count, (
-        clause(H, B),
-        B \== true,
-        B \== fail,
+        current_predicate(Name/Arity),
+        functor(H, Name, Arity),
         \+ system_predicate(H),
-        \+ infrastructure_predicate(H)
+        \+ infrastructure_predicate(H),
+        catch(clause(H, B), _, fail),
+        B \== true,
+        B \== fail
     ), RuleCount),
     RuleCount >= 10.
 
@@ -104,9 +114,12 @@ test(consultation_mode_exists, [nondet]) :-
 test(has_recursive_predicate, [nondet]) :-
     % Check that at least one student-defined recursive predicate exists
     % (excludes template-provided predicates like consultation_loop)
-    clause(Head, Body),
-    functor(Head, Name, Arity),
+    current_predicate(Name/Arity),
     \+ template_predicate(Name),
+    functor(Head, Name, Arity),
+    catch(clause(Head, Body), _, fail),
+    Body \== fail,
+    Body \== true,
     contains_call(Body, Name, Arity).
 
 % Template-provided predicates that are already recursive

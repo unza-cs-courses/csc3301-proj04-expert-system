@@ -43,7 +43,13 @@
 %   fact(mortal_species(human)).
 
 % fact/1 - Returns all facts (defined by consulting knowledge base)
-fact(F) :- clause(F, true), \+ system_predicate(F).
+% Uses current_predicate/1 to safely enumerate predicates before
+% calling clause/2, which requires a sufficiently instantiated head.
+fact(F) :-
+    current_predicate(Name/Arity),
+    functor(F, Name, Arity),
+    \+ system_predicate(F),
+    catch(clause(F, true), _, fail).
 
 % Helper: check if predicate is a system predicate
 system_predicate(F) :- functor(F, Name, _), atom_codes(Name, [C|_]), C == 0'$.

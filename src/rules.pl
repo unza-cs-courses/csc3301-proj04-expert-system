@@ -49,7 +49,14 @@
 %         conclusion(X) :- condition1(X), condition2(X).
 
 % rule/2 - Returns all rules (clauses with non-trivial bodies)
-rule(H, B) :- clause(H, B), B \== true, \+ system_predicate(H).
+% Uses current_predicate/1 to safely enumerate predicates before
+% calling clause/2, which requires a sufficiently instantiated head.
+rule(H, B) :-
+    current_predicate(Name/Arity),
+    functor(H, Name, Arity),
+    \+ system_predicate(H),
+    catch(clause(H, B), _, fail),
+    B \== true.
 
 % Helper: check if predicate is a system predicate
 system_predicate(H) :- functor(H, Name, _), atom_codes(Name, [C|_]), C == 0'$.
